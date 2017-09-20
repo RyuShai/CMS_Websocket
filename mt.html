@@ -1,0 +1,19 @@
+<html>
+<body>
+    <img src="" id="display_img"></img>
+</div>
+</body>
+</html>
+
+
+<script>
+  ws = new WebSocket("ws://localhost:8001");
+  ws.onmessage = function(msg){
+    if (msg.data){
+        console.log("new data");
+        document.getElementById("display_img").src ="data:image/png;base64, "+msg.data;
+        delete msg;
+    }
+    // console.log(msg);
+  }
+</script>

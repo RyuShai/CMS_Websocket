@@ -24,7 +24,10 @@ var conn = client.connect('ws://localhost:8001',function(str){
         console.log('from server: '+ str);
         conn.close();
     })
-    conn.send(data,function(str){
-        console.log('send binary');
+    conn.on('binary',function(str){
+        console.log('binary : '+ str)
+    })
+    conn.send(data,function(inStream){
+    
     })
 })
