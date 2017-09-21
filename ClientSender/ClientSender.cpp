@@ -12,10 +12,12 @@
  */
 
 #include "ClientSender.h"
-
+easywsclient::WebSocket::pointer ClientSender::ws = NULL;
+bool ClientSender::sendData = false;
 ClientSender::ClientSender() {
     //        ws = WebSocket::from_url(wsUrl);
     //    std::cout<<"init sender "<<ws->getReadyState()<<std::endl;
+
 }
 
 ClientSender::ClientSender(const ClientSender& orig) {
@@ -42,25 +44,32 @@ void ClientSender::HandleMessage(const std::string& message){
     }
 }
 
-bool ClientSender::SendImage2Server(cv::Mat source){
-    if(Connect2Server())
-    {
-        if(Mat2Base64(source))
+bool ClientSender::SendImage2Server(){
+        ws = WebSocket::from_url(wsUrl);
+        if(!wsUrl.empty())
         {
-                        cout<<"sending ... "<<endl;
-                        ws->poll();
             ws->send(base64Data);
         }
         else
         {
-            std::cout<<"cant convert"<<std::endl;
-            return false;
+            cout<<"empty data\n";
         }
-    }
-    else
-    {
+        while(ws->getReadyState() != WebSocket::CLOSED)
+        {
+            //wait until connected
+            ws->poll();
+            ws->dispatch([](const std::string& message){
+                if(message == "ok")
+                {
+                    std::cout<<"fuck you\n";
+                    ws->close();
+                }
+            });
+                      
+//            ws->close();
+//            return true;
+        }
         return false;
-    }
 }
 //convert cv::Mat to base64
 //return true if base64 data not empty
@@ -86,10 +95,17 @@ bool ClientSender::Connect2Server(){
         {
             //wait until connected
             ws->poll();
-            ws->send(base64Data);
-            ws->close();
+            ws->dispatch([](const std::string& message){
+                if(message == "getVideo")
+                {
+                    cout<<"get video\n";
+                    sendData = true;
+                    ws->close();
+                }
+            });
+            
         }
-        
+        cout<<"go out\n";
         return true;
     }
     else
@@ -115,5 +131,9 @@ bool ClientSender::DisconnectFromServer(){
     {
         return false;
     }
+}
+
+int ClientSender::getWSState(){
+    return ws->getReadyState();
 }
 

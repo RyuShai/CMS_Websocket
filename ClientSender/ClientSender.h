@@ -35,19 +35,23 @@ public:
     std::string getWsUrl() const;
     bool Connect2Server();
     bool DisconnectFromServer();
-    bool SendImage2Server(cv::Mat source);
+    bool SendImage2Server();
     std::string closeCode="";
     bool Mat2Base64(cv::Mat source);
+    int getWSState();
 private:
     //variable
     //variable connect to websocket server
-    WebSocket::pointer ws ; 
+    static WebSocket::pointer ws ; 
     //variable url to connect
     std::string wsUrl;
     //variable array hold image data compress from cv::Mat
     std::vector<uchar> buffer;
     //variable base64 use to send to server
     std::string base64Data;
+    //variable emit when starting send data
+    static bool sendData;
+    
     //function
     void HandleMessage(const std::string &message);
     

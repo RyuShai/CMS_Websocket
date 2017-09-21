@@ -50,6 +50,7 @@
         <linkerTool>
           <linkerLibItems>
             <linkerOptionItem>`pkg-config --libs opencv`</linkerOptionItem>
+            <linkerOptionItem>-lpthread</linkerOptionItem>
           </linkerLibItems>
         </linkerTool>
       </compileType>

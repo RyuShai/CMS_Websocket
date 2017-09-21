@@ -114,7 +114,7 @@ class _DummyWebSocket : public easywsclient::WebSocket
 {
   public:
     void poll(int timeout) { }
-    void send(const std::string& message) { }
+    int send(const std::string& message) { }
     void sendBinary(const std::string& message) { }
     void sendBinary(const std::vector<uint8_t>& message) { }
     void sendPing() { }
@@ -344,8 +344,9 @@ class _RealWebSocket : public easywsclient::WebSocket
         sendData(wsheader_type::PING, empty.size(), empty.begin(), empty.end());
     }
 
-    void send(const std::string& message) {
+    int send(const std::string& message) {
         sendData(wsheader_type::TEXT_FRAME, message.size(), message.begin(), message.end());
+        return true;
     }
 
     void sendBinary(const std::string& message) {
@@ -412,6 +413,7 @@ class _RealWebSocket : public easywsclient::WebSocket
         if (useMask) {
             for (size_t i = 0; i != message_size; ++i) { *(txbuf.end() - message_size + i) ^= masking_key[i&0x3]; }
         }
+        std::cout<<"send done\n";
     }
 
     void close() {

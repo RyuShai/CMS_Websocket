@@ -10,7 +10,7 @@
 
 #include <string>
 #include <vector>
-
+#include <iostream>
 namespace easywsclient {
 
 struct Callback_Imp { virtual void operator()(const std::string& message) = 0; };
@@ -29,7 +29,7 @@ class WebSocket {
     // Interfaces:
     virtual ~WebSocket() { }
     virtual void poll(int timeout = 0) = 0; // timeout in milliseconds
-    virtual void send(const std::string& message) = 0;
+    virtual int send(const std::string& message) = 0;
     virtual void sendBinary(const std::string& message) = 0;
     virtual void sendBinary(const std::vector<uint8_t>& message) = 0;
     virtual void sendPing() = 0;

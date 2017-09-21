@@ -11,7 +11,9 @@
             <file>file:/home/shai/Documents/Vp9/ComputerVision/CMS/CMS_Websocket/ClientSender/ClientSender.h</file>
             <file>file:/home/shai/Documents/Vp9/ComputerVision/CMS/CMS_Websocket/ClientSender/main.cpp</file>
             <file>file:/home/shai/Documents/Vp9/ComputerVision/CMS/CMS_Websocket/ClientSender/base64.cpp</file>
+            <file>file:/home/shai/Documents/Vp9/ComputerVision/CMS/CMS_Websocket/ClientSender/easywsclient.cpp</file>
             <file>file:/home/shai/Documents/Vp9/ComputerVision/CMS/CMS_Websocket/ClientSender/base64.h</file>
+            <file>file:/home/shai/Documents/Vp9/ComputerVision/CMS/CMS_Websocket/ClientSender/easywsclient.hpp</file>
         </group>
     </open-files>
 </project-private>
