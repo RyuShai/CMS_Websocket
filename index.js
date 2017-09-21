@@ -2,6 +2,8 @@
 var ws = require('nodejs-websocket')
 //variable save sender connect for quick access
 var senderConnection;
+//variable emit stop send source data
+var stop = false;
 //create listener websocket server
 var server = ws.createServer(function(connection){
 	console.log("new connect from : "+ connection.path)
@@ -11,10 +13,18 @@ var server = ws.createServer(function(connection){
 	//type receiver : send get video image request to sender to get image then send it to receiver
 	if(connection.path.includes('sender'))
 	{
-		//type sender
-		console.log("damn")
-		// connection.send("getVideo");
-		senderConnection = connection;
+		//type sender		
+		if(stop)
+		{
+			console.log("send stop");
+			connection.sendText('stop')
+			stop = false;
+		}
+		else
+		{
+			senderConnection = connection;
+		}
+		
 	}
 	else if(connection.path.includes('receiver'))
 	{
@@ -46,7 +56,16 @@ var server = ws.createServer(function(connection){
 	})
 
 	connection.on("close",function(code,reason){
-		console.log('code: '+ code + " reason: "+ reason);
+		console.log('code: '+ code + " reason: "+ reason + ' '+connection.path);
+		if(code == 1001)
+		{
+			// console.log(senderConnection.readyState);
+			// if(senderConnection.readyState== senderConnection.OPEN)
+			// {
+				// console.log("send stop");
+				stop=true;
+			// }
+		}
 	})
 
 	
@@ -109,7 +128,7 @@ function referData2Receiver(data)
 		{
 			if(client.readyState == client.OPEN)
 			{
-				console.log(data);
+				// console.log(data);
 				client.sendText(data)	
 			}
 			

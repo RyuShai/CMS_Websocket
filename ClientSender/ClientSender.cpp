@@ -13,11 +13,12 @@
 
 #include "ClientSender.h"
 easywsclient::WebSocket::pointer ClientSender::ws = NULL;
-bool ClientSender::sendData = false;
+//bool ClientSender::sendData = false;
+bool sendData = true;
 ClientSender::ClientSender() {
     //        ws = WebSocket::from_url(wsUrl);
     //    std::cout<<"init sender "<<ws->getReadyState()<<std::endl;
-
+    
 }
 
 ClientSender::ClientSender(const ClientSender& orig) {
@@ -59,10 +60,14 @@ bool ClientSender::SendImage2Server(){
             //wait until connected
             ws->poll();
             ws->dispatch([](const std::string& message){
+                cout<<"message: "<<message<<endl;
                 if(message == "ok")
                 {
-                    std::cout<<"fuck you\n";
                     ws->close();
+                }
+                else if(message == "stop")
+                {
+                    sendData = false;
                 }
             });
                       

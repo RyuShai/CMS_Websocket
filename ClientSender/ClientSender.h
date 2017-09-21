@@ -25,7 +25,7 @@ using namespace cv;
 using easywsclient::WebSocket;
 using namespace std;
         
-       
+extern bool sendData;
 class ClientSender {
 public:
     ClientSender();
@@ -39,6 +39,7 @@ public:
     std::string closeCode="";
     bool Mat2Base64(cv::Mat source);
     int getWSState();
+    
 private:
     //variable
     //variable connect to websocket server
@@ -50,7 +51,7 @@ private:
     //variable base64 use to send to server
     std::string base64Data;
     //variable emit when starting send data
-    static bool sendData;
+    
     
     //function
     void HandleMessage(const std::string &message);

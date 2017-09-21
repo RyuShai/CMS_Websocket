@@ -30,8 +30,9 @@ void doSomething()
 }
 int main(int argc, char** argv) {
     cout<<"start"<<endl;
-    cv::VideoCapture cam("/home/shai/Downloads/Telegram Desktop/test.mp4");
-        Mat img = imread("/home/shai/Pictures/animation.png");
+//    cv::VideoCapture cam("/home/shai/Downloads/Telegram Desktop/test.mp4");
+    cv::VideoCapture cam("http://07c2.vp9.tv:3395/chn/NEM2/v.m3u8");
+//        Mat img = imread("/home/shai/Pictures/animation.png");
     Mat frame;
     ClientSender sender;
     sender.setWsUrl("ws://localhost:8224/sender");
@@ -54,7 +55,13 @@ int main(int argc, char** argv) {
                     {
                         sender.SendImage2Server();
                     }
-                    waitKey(40);
+                    waitKey(30);
+                    cout<<"sendata: "<<sendData<<endl;
+                    if(!sendData)
+                    {
+                        cout<<"break\n";
+                        break;
+                    }
 //                    std::this_thread::sleep_for(chrono::milliseconds(40));
 //                    if(sender.getWSState() == WebSocket::CLOSED)
 //                    {
