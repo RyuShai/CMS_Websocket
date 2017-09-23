@@ -10,7 +10,7 @@
   ws = new WebSocket("ws://localhost:8224/receiver");
   ws.onmessage = function(msg){
     if (msg.data){
-        console.log("new data "+ msg);
+        console.log("new data "+ msg.data);
         document.getElementById("display_img").src ="data:image/png;base64, "+msg.data;
         // delete msg;
     }

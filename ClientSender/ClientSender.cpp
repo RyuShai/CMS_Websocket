@@ -12,7 +12,7 @@
  */
 
 #include "ClientSender.h"
-easywsclient::WebSocket::pointer ClientSender::ws = NULL;
+ easywsclient::WebSocket::pointer ClientSender::ws = NULL;
 //bool ClientSender::sendData = false;
 bool sendData = true;
 ClientSender::ClientSender() {
@@ -46,10 +46,15 @@ void ClientSender::HandleMessage(const std::string& message){
 }
 
 bool ClientSender::SendImage2Server(){
+    if(ws->getReadyState() == WebSocket::CLOSED)
+    {
         ws = WebSocket::from_url(wsUrl);
-        if(!wsUrl.empty())
+    }
+        if(!base64Data.empty())
         {
             ws->send(base64Data);
+            cout<<"send hello\n";
+            sendData = false;
         }
         else
         {
@@ -58,21 +63,26 @@ bool ClientSender::SendImage2Server(){
         while(ws->getReadyState() != WebSocket::CLOSED)
         {
             //wait until connected
-            ws->poll();
+            ws->poll(-1);
             ws->dispatch([](const std::string& message){
-                cout<<"message: "<<message<<endl;
+                cout<<"from client: "<<message<<endl;
                 if(message == "ok")
                 {
-                    ws->close();
+//                    ws->close();
+                    sendData = true;
                 }
                 else if(message == "stop")
                 {
                     sendData = false;
+                    ws->close();
                 }
             });
                       
 //            ws->close();
-//            return true;
+            if(sendData)
+            {
+                return true;
+            }        
         }
         return false;
 }
@@ -80,6 +90,8 @@ bool ClientSender::SendImage2Server(){
 //return true if base64 data not empty
 //return false all other;
 bool ClientSender::Mat2Base64(cv::Mat source){
+    //variable array hold image data compress from cv::Mat
+    std::vector<uchar> buffer;
     base64Data = "";
     cv::imencode(".png",source,buffer);
     uchar *msgBase64 = new uchar[buffer.size()];
@@ -88,6 +100,8 @@ bool ClientSender::Mat2Base64(cv::Mat source){
         msgBase64[i] = buffer[i];
     }
     base64Data = base64_encode(msgBase64, buffer.size());
+    buffer.clear();
+    delete msgBase64 ;
     return base64Data == "" ? false : true;
 }
 
@@ -99,15 +113,20 @@ bool ClientSender::Connect2Server(){
         while(ws->getReadyState() != WebSocket::CLOSED)
         {
             //wait until connected
-            ws->poll();
-            ws->dispatch([](const std::string& message){
+//            while(true)
+//            {
+                ws->poll(-1);
+                ws->dispatch([](const std::string& message){
+                cout<<"from server: "<<message<<endl;
                 if(message == "getVideo")
                 {
                     cout<<"get video\n";
-                    sendData = true;
                     ws->close();
                 }
             });
+//            if(sendData)
+//                break;
+//            }
             
         }
         cout<<"go out\n";

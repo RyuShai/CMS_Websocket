@@ -30,8 +30,8 @@ void doSomething()
 }
 int main(int argc, char** argv) {
     cout<<"start"<<endl;
-//    cv::VideoCapture cam("/home/shai/Downloads/Telegram Desktop/test.mp4");
-    cv::VideoCapture cam("http://07c2.vp9.tv:3395/chn/NEM2/v.m3u8");
+    cv::VideoCapture cam("/home/shai/Downloads/Telegram Desktop/test.mp4");
+//    cv::VideoCapture cam("http://07c2.vp9.tv:3395/chn/NEM2/v.m3u8");
 //        Mat img = imread("/home/shai/Pictures/animation.png");
     Mat frame;
     ClientSender sender;
@@ -48,7 +48,7 @@ int main(int argc, char** argv) {
             //        std::this_thread::yield();
             
                     cam>>frame;
-                    resize(frame,frame, Size(frame.cols*0.5,frame.rows*0.5));
+                    resize(frame,frame, Size(frame.cols,frame.rows));
 //                    imshow("test",frame);
 //                    waitKey(40);
                     if(sender.Mat2Base64(frame))
@@ -57,11 +57,11 @@ int main(int argc, char** argv) {
                     }
                     waitKey(30);
                     cout<<"sendata: "<<sendData<<endl;
-                    if(!sendData)
-                    {
-                        cout<<"break\n";
-                        break;
-                    }
+//                    if(!sendData)
+//                    {
+//                        cout<<"break\n";
+//                        break;
+//                    }
 //                    std::this_thread::sleep_for(chrono::milliseconds(40));
 //                    if(sender.getWSState() == WebSocket::CLOSED)
 //                    {

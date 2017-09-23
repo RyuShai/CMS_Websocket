@@ -46,8 +46,7 @@ private:
     static WebSocket::pointer ws ; 
     //variable url to connect
     std::string wsUrl;
-    //variable array hold image data compress from cv::Mat
-    std::vector<uchar> buffer;
+    
     //variable base64 use to send to server
     std::string base64Data;
     //variable emit when starting send data
