@@ -1,0 +1,14 @@
+Installation
+============
+
+Install OpenCV >= 3.0.0
+  follow this link http://milq.github.io/install-opencv-ubuntu-debian/
+Install LibVLC
+  sudo apt install libvlc-dev
+Build source in a build folder inside the main folder
+  mkdir build
+  cd build
+  cmake ..
+  make
+Run
+  PlateRecognizationFramework/PlateRecognizationFramework

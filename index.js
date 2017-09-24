@@ -82,7 +82,7 @@ function onTextMessage(str, conn)
 	console.log("Text message from : "+ conn.path)
 	if(conn.path.includes('sender'))
 	{
-		console.log("from client: "+ str)
+		// console.log("from client: "+ str)
 		// conn.send("world")
 		/////-------------------///////
 		console.log('send to reveiver');

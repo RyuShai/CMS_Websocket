@@ -1,0 +1,46 @@
+url:http://07c2.vp9.tv:5599/chn/RAD2/v.m3u8
+http://07c2.vp9.tv:5599/chn/RAD2/v.m3u8
+http://4co2.vp9.tv/chn/VTT4/v.m3u8
+/home/thanhnn/Videos/RAD2.mp4
+detect_mode:motobike_4
+car_cascade:../data/plateCascade/2620_RectWhitePlate_Universal.xml
+car_horizontal_cascade:../data/plateCascade/cascade_DaiTrang_Aug1_5316.xml
+car_logistic:../data/textRecogData/20161007_logistic.xml
+motobike_logistic:../data/textRecogData/logisticTaiThe2.xml
+filedump:../data/TextReaderdata/cnn-20170806_7_80.dump
+cnn-20170806_7_80.dump
+cnn-20170806_8_160.dump
+frameSize: 350
+Resolution{
+video_width:1920
+2048
+video_height:1080
+1536
+}
+plateSizeForCascade_Square{
+SquareMinWidth:30
+SquareMinHeight:10
+SquareMaxWidth:200
+SquareMaxHeight:180
+SquareDetectScale:1.2
+SquareNeighbor:3
+size_quare_cascade_x: 26
+size_quare_cascade_y: 20
+}
+plateSizeForCascade_Long{
+LongMinWidth:10
+LongMinHeight:10
+LongMaxWidth:300
+LongMaxHeight:100
+LongDetectScale:1.200
+LongNeighbor:20
+size_long_cascade_x: 53
+size_long_cascade_y: 14
+}
+
+cropFrame{
+cropX:100
+cropY:700
+cropWidth:1500
+cropHeight:380
+}
