@@ -3,7 +3,11 @@ var ws = require('nodejs-websocket')
 //variable save sender connect for quick access
 var senderConnection;
 //variable emit stop send source data
-var stop = false;
+var stopStream = false;
+//variable emit webview connected
+var isReceiverConnected=false;
+//variable emit engince connected
+var isSenderConnected =false;
 //create listener websocket server
 var server = ws.createServer(function(connection){
 	console.log("new connect from : "+ connection.path)
@@ -14,22 +18,19 @@ var server = ws.createServer(function(connection){
 	if(connection.path.includes('sender'))
 	{
 		//type sender		
-		if(stop)
-		{
-			console.log("send stop");
-			connection.sendText('stop')
-			stop = false;
-		}
-		else
-		{
-			senderConnection = connection;
-		}
-		
+		if(!isSenderConnected)
+		isSenderConnected = true;
+
+		senderConnection = connection;
 	}
 	else if(connection.path.includes('receiver'))
 	{
 		//type receiver
-		senderConnection.sendText('getVideo');
+		if(!isReceiverConnected)
+		isReceiverConnected=true;
+
+		if(senderConnection != null || senderConnection != undefined)
+			senderConnection.sendText('getVideo');
 	}
 	else
 	{
@@ -42,6 +43,7 @@ var server = ws.createServer(function(connection){
 	//text message
 	connection.on("text",function(str){
 		console.log("onText ")
+		
 		onTextMessage(str,connection)
 	})
 
@@ -66,6 +68,24 @@ var server = ws.createServer(function(connection){
 				stop=true;
 			// }
 		}
+		if(connection.path.includes('sender'))
+		{
+			server.connections.forEach(function(conn){
+				isSenderConnected = false;
+				if(con.path.includes("sender")){
+					isSenderConnected=true;
+				}
+			})
+		}
+		else if(connection.path.includes('receiver'))
+		{
+			server.connections.forEach(function(conn){
+				isReceiverConnected = false;
+				if(con.path.includes("receiver")){
+					isReceiverConnected=true;
+				}
+			})
+		}
 	})
 
 	
@@ -82,13 +102,20 @@ function onTextMessage(str, conn)
 	console.log("Text message from : "+ conn.path)
 	if(conn.path.includes('sender'))
 	{
-		// console.log("from client: "+ str)
-		// conn.send("world")
-		/////-------------------///////
-		console.log('send to reveiver');
-		// from sender client
-		referData2Receiver(str)
-		conn.send('ok')
+		if(stop)
+		{
+			console.log("send stop");
+			connection.sendText('stop')
+			stop = false;
+		}
+		else
+		{
+			console.log('send to reveiver');
+			// from sender client
+			referData2Receiver(str)
+			conn.send('ok')
+		}
+		
 	}
 	else if( conn.path.includes("receiver"))
 	{
@@ -137,4 +164,73 @@ function referData2Receiver(data)
 			
 		}
 	})
+}
+
+///////////
+//create server listent text data
+var jsonSever = ws.createServer(function(conn){
+	//new connection connected
+	console.log("new connection to 8225: "+conn.path)
+	onTextDataConnect(conn);
+	
+	//process coming message
+	conn.on("text",function(str){
+		onTextDataMessage(str,conn);
+	})
+}).listen(8225)
+
+function onTextDataMessage(str, conn)
+{
+	if(conn.path.includes('sender'))
+	{
+		if(isReceiverConnected)
+		{
+			jsonSever.connections.forEach(function(client){
+				if(client.path.includes("receiver"))
+				{
+					//send broad cast json to receiver
+					client.sendText(str);
+					// console.log("to receiver: "+ str);
+				}
+			})
+			conn.sendText('ok');
+		}
+		else{
+			conn.send('stop')
+		}	
+		
+	}
+	conn.on("error",function(err){
+		console.log("error: "+err)
+	})
+
+	conn.on("close",function(code,reason){
+		console.log('code: '+ code + " reason: "+ reason + ' '+conn.path);
+		// if(code == 1001)
+		// {
+		// 	// console.log(senderConnection.readyState);
+		// 	// if(senderConnection.readyState== senderConnection.OPEN)
+		// 	// {
+		// 		// console.log("send stop");
+		// 		stop=true;
+		// 	// }
+		// }
+	})
+}
+
+function onTextDataConnect(conn)
+{
+	if(conn.path.includes('sender'))
+	{
+
+	}
+	else if(conn.path.includes("receiver"))
+	{
+		
+	}
+	else
+	{
+		//stranger connection ==> close it
+		conn.close(302)
+	}
 }

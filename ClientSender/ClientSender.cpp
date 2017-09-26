@@ -12,13 +12,54 @@
  */
 
 #include "ClientSender.h"
- easywsclient::WebSocket::pointer ClientSender::ws = NULL;
+#include <ctime>
+#include <thread>
+easywsclient::WebSocket::pointer ClientSender::ws = NULL;
+easywsclient::WebSocket::pointer ClientSender::jsonClient = NULL;
 //bool ClientSender::sendData = false;
+bool jsonBreaker = false;
+void ClientSender::SendJsonData()
+{
+    auto currentTime = std::chrono::system_clock::now();
+    
+    while(true)
+    {
+        
+        if(!jsonClient || jsonClient->getReadyState()==WebSocket::CLOSED)
+        {
+            jsonClient = WebSocket::from_url("ws://localhost:8225/sender");
+        }
+        auto end = std::chrono::system_clock::now();
+        std::chrono::duration<double> elapsedtime = end - currentTime;
+        if (elapsedtime.count()*1000 > 60000)
+        {
+            jsonClient->send("day la json");
+            while(true)
+            {
+                jsonClient->poll(-1);
+                ws->dispatch([](const std::string& message){
+                    cout<<"from client: "<<message<<endl;
+                    if(message == "ok")
+                    {
+                        //                    ws->close();
+                        jsonBreaker = true;
+                        jsonClient->close();
+                    }
+                });
+                
+                
+            }
+        }
+        if(jsonBreaker)
+           break;
+    }
+}
+
 bool sendData = true;
 ClientSender::ClientSender() {
     //        ws = WebSocket::from_url(wsUrl);
     //    std::cout<<"init sender "<<ws->getReadyState()<<std::endl;
-    
+       
 }
 
 ClientSender::ClientSender(const ClientSender& orig) {
@@ -46,45 +87,46 @@ void ClientSender::HandleMessage(const std::string& message){
 }
 
 bool ClientSender::SendImage2Server(){
+    
     if(ws->getReadyState() == WebSocket::CLOSED)
     {
         ws = WebSocket::from_url(wsUrl);
     }
-        if(!base64Data.empty())
-        {
-            ws->send(base64Data);
-            cout<<"send hello\n";
-            sendData = false;
-        }
-        else
-        {
-            cout<<"empty data\n";
-        }
-        while(ws->getReadyState() != WebSocket::CLOSED)
-        {
-            //wait until connected
-            ws->poll(-1);
-            ws->dispatch([](const std::string& message){
-                cout<<"from client: "<<message<<endl;
-                if(message == "ok")
-                {
-//                    ws->close();
-                    sendData = true;
-                }
-                else if(message == "stop")
-                {
-                    sendData = false;
-                    ws->close();
-                }
-            });
-                      
-//            ws->close();
-            if(sendData)
+    if(!base64Data.empty())
+    {
+        ws->send(base64Data);
+        cout<<"send hello\n";
+        sendData = false;
+    }
+    else
+    {
+        cout<<"empty data\n";
+    }
+    while(ws->getReadyState() != WebSocket::CLOSED) 
+    {
+        //wait until connected
+        ws->poll(-1);
+        ws->dispatch([](const std::string& message){
+            cout<<"from client: "<<message<<endl;
+            if(message == "ok")
             {
-                return true;
-            }        
-        }
-        return false;
+                //                    ws->close();
+                sendData = true;
+            }
+            else if(message == "stop")
+            {
+                sendData = false;
+                ws->close();
+            }
+        });
+        
+        //            ws->close();
+        if(sendData)
+        {
+            return true;
+        }        
+    }
+    return false;
 }
 //convert cv::Mat to base64
 //return true if base64 data not empty
@@ -113,10 +155,10 @@ bool ClientSender::Connect2Server(){
         while(ws->getReadyState() != WebSocket::CLOSED)
         {
             //wait until connected
-//            while(true)
-//            {
-                ws->poll(-1);
-                ws->dispatch([](const std::string& message){
+            //            while(true)
+            //            {
+            ws->poll(-1);
+            ws->dispatch([](const std::string& message){
                 cout<<"from server: "<<message<<endl;
                 if(message == "getVideo")
                 {
@@ -124,9 +166,9 @@ bool ClientSender::Connect2Server(){
                     ws->close();
                 }
             });
-//            if(sendData)
-//                break;
-//            }
+            //            if(sendData)
+            //                break;
+            //            }
             
         }
         cout<<"go out\n";

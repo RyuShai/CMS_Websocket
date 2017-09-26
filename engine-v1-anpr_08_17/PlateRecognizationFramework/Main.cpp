@@ -70,10 +70,12 @@ string json_decode(string json, string keyW){
 //--------------
 using easywsclient::WebSocket;
 static WebSocket::pointer webClient = NULL ;
+static Websocket::pointer jsonWebClient =NULL;
  bool isBreak = false;
 //--------------
 void showFrame()
 {
+	// cout<<"RYU FUCK"<<endl;
 	int nframe = 0;
 	auto start = CLOCK_NOW();
 	int fps = 26;
@@ -119,25 +121,25 @@ void showFrame()
 		
 		delete[] enc_msg;
 
-		// using easywsclient::WebSocket;
+		using easywsclient::WebSocket;
 
 		string json = "{\"type\":\"engine\",\"data\":\"" + encodedFrame + "\",\"engine_id\":\"" + engine_ip + "\"}";
 
-		// std::unique_ptr<WebSocket> ws(WebSocket::from_url("ws://10.12.11.93:8126/foo"));
+		std::unique_ptr<WebSocket> ws(WebSocket::from_url("ws://10.12.11.93:8126/foo"));
 		
-		
-		if(!webClient || webClient->getReadyState()==WebSocket::CLOSED)
+		cout<<"F YEAH\n";
+		if(webClient==NULL || webClient->getReadyState()==WebSocket::CLOSED)
 		{
 			cout<<"RYU int connect server\n";	
 			webClient = WebSocket::from_url("ws://localhost:8224/sender");
 		}
-		// cout<<"RYU here3\n";
-		// // assert(ws);
-		// if (status) {
+		cout<<"RYU here3\n";
+		// assert(ws);
+		if (status) {
 			webClient->send(encodedFrame);
 			isBreak = false;
 			
-		// }
+		}
 		while (webClient->getReadyState() != WebSocket::CLOSED) {
 			// WebSocket::pointer wsp = &*webClientws; // <— because a unique_ptr cannot be copied into a lambda
 			webClient->poll(-1);
@@ -162,7 +164,7 @@ void showFrame()
 			}
 		}
 		cv::imwrite("/var/www/html/web-client/web/video_not_found.jpg", frame);
-		// cv::imshow("Plate1", frame);
+		//  cv::imshow("Plate1", frame);
 		// //this_thread::sleep_for(chrono::milliseconds(15));
 
 		// imshow("tst",frame);
@@ -174,7 +176,7 @@ void showFrame()
 		ElapsedTime elapsed = end - start;
 		if (nframe % 100 == 0)
 		{
-			//cout << " display fps=" << nframe / elapsed.count() << endl;
+			cout << " display fps=" << nframe / elapsed.count() << endl;
 		}
 		while (1)
 		{
@@ -192,6 +194,7 @@ void showFrame()
 
 int main()
 {
+
 
 	int cropX = atoi(IOData::GetCongfigData("cropX:").c_str());
 	int cropY = atoi(IOData::GetCongfigData("cropY:").c_str());
@@ -220,7 +223,7 @@ int main()
 	std::vector<std::thread> ths;
 	ths.push_back(std::thread(VideoReader));
 	ths.push_back(std::thread(plateReader));
-	// ths.push_back(std::thread(PlateRecognitionAction));
+	ths.push_back(std::thread(PlateRecognitionAction));
 	ths.push_back(std::thread(showFrame));
 
 

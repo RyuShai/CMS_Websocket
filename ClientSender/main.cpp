@@ -29,7 +29,20 @@ void doSomething()
     
 }
 int main(int argc, char** argv) {
-    cout<<"start"<<endl;
+    std::thread t([](){
+        while(true)
+        {
+            cout<<"thread 1\n";
+            ClientSender jsonSender;
+            jsonSender.SendJsonData();
+            std::this_thread::yield();
+        }
+    });
+    
+    std::thread t2([](){
+        while(true)
+        {
+                cout<<"start"<<endl;
     cv::VideoCapture cam("/home/shai/Downloads/Telegram Desktop/test.mp4");
 //    cv::VideoCapture cam("http://07c2.vp9.tv:3395/chn/NEM2/v.m3u8");
 //        Mat img = imread("/home/shai/Pictures/animation.png");
@@ -39,6 +52,7 @@ int main(int argc, char** argv) {
     //    std::thread listen(sender.Connect2Server);
     //    listen.join();
     while(true){
+        cout<<"RYU here\n";
         sender.Connect2Server();
         while(cam.isOpened() )
         {
@@ -56,6 +70,7 @@ int main(int argc, char** argv) {
                         sender.SendImage2Server();
                     }
                     waitKey(30);
+                    std::this_thread::yield();
                     cout<<"sendata: "<<sendData<<endl;
 //                    if(!sendData)
 //                    {
@@ -77,6 +92,14 @@ int main(int argc, char** argv) {
     //    sender.SendImage2Server(img);
     cout<<"end"<<endl;
     //    sender.Mat2Base64(img);
+            
+        }
+    });
+    
+    t.join();
+    t2.join();
+    
+
     return 0;
 }
 

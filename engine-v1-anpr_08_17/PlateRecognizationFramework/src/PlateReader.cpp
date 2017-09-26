@@ -110,7 +110,7 @@ void PlateReader::operator()()
 
         frameMutex.unlock();
         //ryu
-        cout<<"Ryu 1 "<<frameQueue.size() <<" "<<this->QueueSize<<endl;
+        // cout<<"Ryu 1 "<<frameQueue.size() <<" "<<this->QueueSize<<endl;
         //shai
         if (int(frameQueue.size()) > this->QueueSize)
             continue;
@@ -127,105 +127,105 @@ void PlateReader::operator()()
                 plates_square[mode] = recognizator_vehicle[mode].GetPlateRegions();
                 
                 //ToDO: Estimate square cascade; ReInit recognizator_vehicle cascade
-                // for (int i = 0; i < (int)plates_square[mode].size(); i++)
-                // {
-                //     num_plate_detected[mode]++;
-                //     //cout << "num: " << num_plate_detected[mode]<<endl;
-                //     /*
-                //     if (num_plate_detected[mode]%50000 <= num_plate_estimate_square_cascade) //Each 50.000 plate recalculate plate size for cascade
-                //     {
-                //         long multiply = plates_square[mode][i].region.width*plates_square[mode][i].region.height;
-                //         car_estimate_square_cascade.push(multiply);
-                //         if (num_plate_detected[mode]%50000 == num_plate_estimate_square_cascade)
-                //         {
-                //             //ToDO: Estimate square cascade
-                //             cascade_input cascade_square_result = estimate_square_cascade(car_estimate_square_cascade);
-                //             //ToDO: ReInit recognizator_vehicle cascade
-                //             string kindcascade = "car_cascade:";
-                //             int kindsizecascade = 0;
-                //             if (mode==1)
-                //             {
-                //                 kindcascade = "car_horizontal_cascade:";
-                //                 kindsizecascade = 1;
-                //             }
-                //             recognizator_vehicle[mode].Init(IOData::GetCongfigData(kindcascade),
-                //                 cv::Size(cascade_square_result.carSquareMin_x, cascade_square_result.carSquareMin_y), 
-                //                 cv::Size(cascade_square_result.carSquareMax_x, cascade_square_result.carSquareMax_y), 
-                //                 cascade_square_result.detectScale, Neighbor[kindsizecascade]);
-                //             //ToDO: Free queue
-                //             while (!car_estimate_square_cascade.empty())
-                //                 car_estimate_square_cascade.pop();
-                //         }
-                //     }
-                //     */
-                // }  
+                for (int i = 0; i < (int)plates_square[mode].size(); i++)
+                {
+                    num_plate_detected[mode]++;
+                    //cout << "num: " << num_plate_detected[mode]<<endl;
+                    /*
+                    if (num_plate_detected[mode]%50000 <= num_plate_estimate_square_cascade) //Each 50.000 plate recalculate plate size for cascade
+                    {
+                        long multiply = plates_square[mode][i].region.width*plates_square[mode][i].region.height;
+                        car_estimate_square_cascade.push(multiply);
+                        if (num_plate_detected[mode]%50000 == num_plate_estimate_square_cascade)
+                        {
+                            //ToDO: Estimate square cascade
+                            cascade_input cascade_square_result = estimate_square_cascade(car_estimate_square_cascade);
+                            //ToDO: ReInit recognizator_vehicle cascade
+                            string kindcascade = "car_cascade:";
+                            int kindsizecascade = 0;
+                            if (mode==1)
+                            {
+                                kindcascade = "car_horizontal_cascade:";
+                                kindsizecascade = 1;
+                            }
+                            recognizator_vehicle[mode].Init(IOData::GetCongfigData(kindcascade),
+                                cv::Size(cascade_square_result.carSquareMin_x, cascade_square_result.carSquareMin_y), 
+                                cv::Size(cascade_square_result.carSquareMax_x, cascade_square_result.carSquareMax_y), 
+                                cascade_square_result.detectScale, Neighbor[kindsizecascade]);
+                            //ToDO: Free queue
+                            while (!car_estimate_square_cascade.empty())
+                                car_estimate_square_cascade.pop();
+                        }
+                    }
+                    */
+                }  
 
                 // ToDO: init vector Plates: plates_process
-                // vector <vehicle> plates_process;
-                // for (int i = 0; i < (int)plates_square[mode].size(); i++)
-                // {
-                //     cv::Rect RegionPlus = cv::Rect(
-                //         std::max(plates_square[mode][i].region.x - 15, 0),
-                //         std::max(plates_square[mode][i].region.y - 15, 0),
-                //         std::min(plates_square[mode][i].region.width + 30, frameROI.cols - plates_square[mode][i].region.x + 15-1),
-                //         std::min(plates_square[mode][i].region.height + 30, frameROI.rows - plates_square[mode][i].region.y + 15-1));
+                vector <vehicle> plates_process;
+                for (int i = 0; i < (int)plates_square[mode].size(); i++)
+                {
+                    cv::Rect RegionPlus = cv::Rect(
+                        std::max(plates_square[mode][i].region.x - 15, 0),
+                        std::max(plates_square[mode][i].region.y - 15, 0),
+                        std::min(plates_square[mode][i].region.width + 30, frameROI.cols - plates_square[mode][i].region.x + 15-1),
+                        std::min(plates_square[mode][i].region.height + 30, frameROI.rows - plates_square[mode][i].region.y + 15-1));
                     
-                //     vehicle a;
-                //     a.locationX = plates_square[mode][i].region.x;
-                //     a.locationY = plates_square[mode][i].region.y;    
-                //     a.time = objects.convert_time(thisFrame.frameTime);
-                //     a.frameID = thisFrame.frameID;
-                //     a.plate = frameROI(RegionPlus);
-                //     a.square_cascade = plates_square[mode][i].region;
-                //     a.CurrentDateTime = thisFrame.frameTime;
-                //     a.plate_croped_detail = crop_plate_corner(frameROI(RegionPlus),mode); //crop plate
-                //     plates_process.push_back(a);
-                //      //ryu
-                //      if(plates_process.size()>100)
-                //      {
-                //         plates_process.pop_back();
-                //      }
-                //      cout<<"RYU plates_process"<<plates_process.size()<<endl;
-                //      //shai
-                // }
-                // //ToDO: init vector plates_square
-                // vector <Rect> plates_square_region;
-                // for (int i = 0; i < (int)plates_square[mode].size(); i++)
-                // {
-                //     plates_square_region.push_back(plates_square[mode][i].region);
-                //     //ryu
-                //     if(plates_square_region.size()>100)
-                //     {
-                //         plates_square_region.pop_back();
-                //     }
-                //     cout<<"RYU plates_square_region"<<plates_square_region.size()<<endl;
-                //     //shai
-                // }
+                    vehicle a;
+                    a.locationX = plates_square[mode][i].region.x;
+                    a.locationY = plates_square[mode][i].region.y;    
+                    a.time = objects.convert_time(thisFrame.frameTime);
+                    a.frameID = thisFrame.frameID;
+                    a.plate = frameROI(RegionPlus);
+                    a.square_cascade = plates_square[mode][i].region;
+                    a.CurrentDateTime = thisFrame.frameTime;
+                    a.plate_croped_detail = crop_plate_corner(frameROI(RegionPlus),mode); //crop plate
+                    plates_process.push_back(a);
+                     //ryu
+                     if(plates_process.size()>100)
+                     {
+                        plates_process.pop_back();
+                     }
+                     cout<<"RYU plates_process"<<plates_process.size()<<endl;
+                     //shai
+                }
+                //ToDO: init vector plates_square
+                vector <Rect> plates_square_region;
+                for (int i = 0; i < (int)plates_square[mode].size(); i++)
+                {
+                    plates_square_region.push_back(plates_square[mode][i].region);
+                    //ryu
+                    if(plates_square_region.size()>100)
+                    {
+                        plates_square_region.pop_back();
+                    }
+                    cout<<"RYU plates_square_region"<<plates_square_region.size()<<endl;
+                    //shai
+                }
                     
 
-                // // //ToDO: kalman tracking & group_plates
-                // //input: vector rect: plates_square[mode]; vector vehicle: plates_process; frameFull
-                // //output: vector Rect + vector Speed; group result: input for cnn
-                // result_group result = group_plates(plates_square_region, plates_process, thisFrame.frame, cropRect,thisFrame.frameID,mode);
-                // //result.rect_plates = plates_square_region;
-                // for (int i=0; i< result.speed_plates.size();i++)
-                //     if (result.speed_plates[i]!="0" & result.speed_plates[i]!="1")
-                //     {
-                //         putText(thisFrame.frame, result.speed_plates[i]+"km/h", cvPoint(result.rect_plates[i].x+cropRect.x,result.rect_plates[i].y+cropRect.y), FONT_HERSHEY_COMPLEX_SMALL, 2, cvScalar(0, 0, 100), 20, CV_AA);
-                //         putText(thisFrame.frame, result.speed_plates[i]+"km/h", cvPoint(result.rect_plates[i].x+cropRect.x,result.rect_plates[i].y+cropRect.y), FONT_HERSHEY_COMPLEX_SMALL, 2, cvScalar(255, 255, 0), 2, CV_AA);
-                //     }
-                // //ToDO: Push data to CNN
-                // for (int i=0;i<result.queuepush.size();i++)
-                // {
-                //     plateQueue.platequeue[mode].push(result.queuepush[i]);
-                //     //ryu
-                //     if(plateQueue.platequeue[mode].size()>100)
-                //     {
-                //         plateQueue.platequeue[mode].pop();
-                //     }
-                //     cout<<"RYU plateQueue.platequeue[mode].size()"<<plateQueue.platequeue[mode].size()<<endl;
-                //     //shai
-                // }
+                // //ToDO: kalman tracking & group_plates
+                //input: vector rect: plates_square[mode]; vector vehicle: plates_process; frameFull
+                //output: vector Rect + vector Speed; group result: input for cnn
+                result_group result = group_plates(plates_square_region, plates_process, thisFrame.frame, cropRect,thisFrame.frameID,mode);
+                //result.rect_plates = plates_square_region;
+                for (int i=0; i< result.speed_plates.size();i++)
+                    if (result.speed_plates[i]!="0" & result.speed_plates[i]!="1")
+                    {
+                        putText(thisFrame.frame, result.speed_plates[i]+"km/h", cvPoint(result.rect_plates[i].x+cropRect.x,result.rect_plates[i].y+cropRect.y), FONT_HERSHEY_COMPLEX_SMALL, 2, cvScalar(0, 0, 100), 20, CV_AA);
+                        putText(thisFrame.frame, result.speed_plates[i]+"km/h", cvPoint(result.rect_plates[i].x+cropRect.x,result.rect_plates[i].y+cropRect.y), FONT_HERSHEY_COMPLEX_SMALL, 2, cvScalar(255, 255, 0), 2, CV_AA);
+                    }
+                //ToDO: Push data to CNN
+                for (int i=0;i<result.queuepush.size();i++)
+                {
+                    plateQueue.platequeue[mode].push(result.queuepush[i]);
+                    //ryu
+                    if(plateQueue.platequeue[mode].size()>100)
+                    {
+                        plateQueue.platequeue[mode].pop();
+                    }
+                    cout<<"RYU plateQueue.platequeue[mode].size()"<<plateQueue.platequeue[mode].size()<<endl;
+                    //shai
+                }
                 
                 //ryu
                 recognizator_vehicle[mode].ClearImg();

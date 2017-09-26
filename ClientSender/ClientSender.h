@@ -26,6 +26,7 @@ using easywsclient::WebSocket;
 using namespace std;
         
 extern bool sendData;
+extern bool jsonBreaker;
 class ClientSender {
 public:
     ClientSender();
@@ -39,11 +40,12 @@ public:
     std::string closeCode="";
     bool Mat2Base64(cv::Mat source);
     int getWSState();
-    
+    static void SendJsonData();
 private:
     //variable
     //variable connect to websocket server
     static WebSocket::pointer ws ; 
+    static WebSocket::pointer jsonClient;
     //variable url to connect
     std::string wsUrl;
     
