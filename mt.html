@@ -11,7 +11,16 @@
   ws.onmessage = function(msg){
     if (msg.data){
         console.log("new data "+ msg.data);
-        document.getElementById("display_img").src ="data:image/png;base64, "+msg.data;
+        var reader = new window.FileReader();
+ reader.readAsDataURL(msg.data); 
+ reader.onloadend = function() {
+               var base64data = reader.result;                
+                console.log(base64data)
+console.log( base64data.split(",")[1]);
+document.getElementById("display_img").src ="data:image/jpg;base64, "+base64data.split(',')[1];
+  }
+        
+        // document.getElementById("display_img").src ="data:image/jpg;base64, "+msg.data;
         // delete msg;
     }
     // console.log(msg);

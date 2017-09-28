@@ -43,14 +43,28 @@ var server = ws.createServer(function(connection){
 	//text message
 	connection.on("text",function(str){
 		console.log("onText ")
-		
+		console.log("Received " + str.length + " bytes of binary data")
 		onTextMessage(str,connection)
 	})
 
 	//binary message
 	connection.on("binary",function(inStream){
 		console.log("onBinary")
-		onBinaryMessage(inStream, connection)
+		//----
+		var data = new Buffer(0)
+		// Read chunks of binary data and add to the buffer
+		inStream.on("readable", function () {
+		    var newData = inStream.read()
+		    if (newData)
+		        data = Buffer.concat([data, newData], data.length+newData.length)
+		})
+		inStream.on("end", function () {
+			console.log("Received " + data.length + " bytes of binary data")
+			// process_my_data(data)
+			onBinaryMessage(data, connection)
+		})
+		//----
+		
 	})
 
 	connection.on("error",function(err){
@@ -72,7 +86,7 @@ var server = ws.createServer(function(connection){
 		{
 			server.connections.forEach(function(conn){
 				isSenderConnected = false;
-				if(con.path.includes("sender")){
+				if(conn.path.includes("sender")){
 					isSenderConnected=true;
 				}
 			})
@@ -81,7 +95,7 @@ var server = ws.createServer(function(connection){
 		{
 			server.connections.forEach(function(conn){
 				isReceiverConnected = false;
-				if(con.path.includes("receiver")){
+				if(conn.path.includes("receiver")){
 					isReceiverConnected=true;
 				}
 			})
@@ -99,14 +113,15 @@ server.on('error',function(err){
 //on text message
 function onTextMessage(str, conn)
 {
-	console.log("Text message from : "+ conn.path)
+	console.log("Text message from : "+ conn.path + " "+ str.length + " charaters " + Buffer.byteLength(str, 'utf8')+ " bytes");
 	if(conn.path.includes('sender'))
 	{
-		if(stop)
+		
+		if(stopStream)
 		{
 			console.log("send stop");
 			connection.sendText('stop')
-			stop = false;
+			stopStream = false;
 		}
 		else
 		{
@@ -120,7 +135,7 @@ function onTextMessage(str, conn)
 	else if( conn.path.includes("receiver"))
 	{
 		//from receiver client
-
+		
 	}
 	else{
 		//from stranger client, close it
@@ -128,7 +143,7 @@ function onTextMessage(str, conn)
 	}
 }
 //on binary message
-function onBinaryMessage(inStream, conn)
+function onBinaryMessage(data, conn)
 {
 	console.log("Binary message from : "+ conn.path)
 	if(conn.path.includes('sender'))
@@ -136,12 +151,25 @@ function onBinaryMessage(inStream, conn)
 
 		//from sender client
 		//refer to receiver
+		server.connections.forEach(function(client){
+			//send data to receiver client
+			if(client.path.includes('receiver'))
+			{
+				if(client.readyState == client.OPEN)
+				{
+					// console.log(data);
+					client.sendBinary(data)	
+				}
+				
+			}
+		})
+		conn.send('ok')
 
 	}
 	else if( conn.path.includes("receiver"))
 	{
 		//from receiver client
-
+		
 	}
 	else{
 		//from stranger client, close it

@@ -94,8 +94,9 @@ bool ClientSender::SendImage2Server(){
     }
     if(!base64Data.empty())
     {
-        ws->send(base64Data);
-        cout<<"send hello\n";
+        ws->sendBinary(buffer);
+        
+//        cout<<"send hello\n";
         sendData = false;
     }
     else
@@ -126,6 +127,7 @@ bool ClientSender::SendImage2Server(){
             return true;
         }        
     }
+    buffer.clear();
     return false;
 }
 //convert cv::Mat to base64
@@ -133,7 +135,7 @@ bool ClientSender::SendImage2Server(){
 //return false all other;
 bool ClientSender::Mat2Base64(cv::Mat source){
     //variable array hold image data compress from cv::Mat
-    std::vector<uchar> buffer;
+    
     base64Data = "";
     cv::imencode(".png",source,buffer);
     uchar *msgBase64 = new uchar[buffer.size()];
@@ -142,7 +144,7 @@ bool ClientSender::Mat2Base64(cv::Mat source){
         msgBase64[i] = buffer[i];
     }
     base64Data = base64_encode(msgBase64, buffer.size());
-    buffer.clear();
+    
     delete msgBase64 ;
     return base64Data == "" ? false : true;
 }

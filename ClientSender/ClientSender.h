@@ -52,7 +52,7 @@ private:
     //variable base64 use to send to server
     std::string base64Data;
     //variable emit when starting send data
-    
+    std::vector<uchar> buffer;
     
     //function
     void HandleMessage(const std::string &message);

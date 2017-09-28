@@ -29,23 +29,23 @@ void doSomething()
     
 }
 int main(int argc, char** argv) {
-    std::thread t([](){
-        while(true)
-        {
-            cout<<"thread 1\n";
-            ClientSender jsonSender;
-            jsonSender.SendJsonData();
-            std::this_thread::yield();
-        }
-    });
+//    std::thread t([](){
+//        while(true)
+//        {
+//            cout<<"thread 1\n";
+//            ClientSender jsonSender;
+//            jsonSender.SendJsonData();
+//            std::this_thread::yield();
+//        }
+//    });
     
-    std::thread t2([](){
-        while(true)
-        {
+//    std::thread t2([](){
+//        while(true)
+//        {
                 cout<<"start"<<endl;
     cv::VideoCapture cam("/home/shai/Downloads/Telegram Desktop/test.mp4");
-//    cv::VideoCapture cam("http://07c2.vp9.tv:3395/chn/NEM2/v.m3u8");
-//        Mat img = imread("/home/shai/Pictures/animation.png");
+//    cv::VideoCapture cam("http://10.11.11.108/live/nal/0/005a20528a6cxyz14349");
+//        Mat frame = imread("/home/shai/Pictures/animation.png");
     Mat frame;
     ClientSender sender;
     sender.setWsUrl("ws://localhost:8224/sender");
@@ -70,7 +70,7 @@ int main(int argc, char** argv) {
                         sender.SendImage2Server();
                     }
                     waitKey(30);
-                    std::this_thread::yield();
+//                    std::this_thread::yield();
                     cout<<"sendata: "<<sendData<<endl;
 //                    if(!sendData)
 //                    {
@@ -93,11 +93,11 @@ int main(int argc, char** argv) {
     cout<<"end"<<endl;
     //    sender.Mat2Base64(img);
             
-        }
-    });
-    
-    t.join();
-    t2.join();
+//        }
+//    });
+//    
+//    // t.join();
+//    t2.join();
     
 
     return 0;
